@@ -110,6 +110,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView accidentStatusTV;
     private List<LatLng> selectedPolyline;
     private TextView routeDetailTV;
+    private TextView RouteNumber;
+    private TextView Risk;
+    private TextView Duration;
+    private TextView Distance;
+
     private Button navigate;
     private LatLng destination ;
     private String destinationPlace;
@@ -545,26 +550,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int routeLengthInMeters  = allRouteDetails.get(routeNo).getRouteLengthInMeters();
 
         // Convert seconds to Hrs:min:ss
-        int secs = routeDurationInSeconds % 60;
+//        int secs = routeDurationInSeconds % 60;
         int d2 = routeDurationInSeconds / 60;
         int mins = d2 % 60;
         int hrs = d2 / 60;
 
-        String duration = String.format("%02d hrs %02d mins %02d secs", hrs, mins, secs);
+        String duration = String.format("%02d hrs %02d mins", hrs, mins);
 
         //Convert Distance
-        int meters = routeLengthInMeters % 1000;
+//        int meters = routeLengthInMeters % 1000;
         int kms = routeLengthInMeters / 1000;
 
-        String distance = String.format("%02d kms %02d meters", kms, meters);
+        String distance = String.format("%02d kms", kms);
 
 
         String routeDetail = "Route No: " + (routeNo + 1 ) + "\n" + "Safety Rating: " + allRouteSafetyRating.get(routeNo) +
                 "\n" + "Duration: " +  duration +
                 "\n" + "Distance: " + distance;
-        routeDetailTV = findViewById(R.id.routeDetailId);
+        routeDetailTV = findViewById(R.id.routeDetail_exploreId);
+        RouteNumber = findViewById(R.id.routeNumber_exploreId);
+        Risk = findViewById(R.id.RouteRisk_explore);
+        Duration = findViewById(R.id.RouteDuration_explore);
+        Distance = findViewById(R.id.RouteDistance_explore);
 
-        routeDetailTV.setText(routeDetail);
+        routeDetailTV.setText("Route Details ");
+        RouteNumber.setText("Route No: " + routeNo);
+        Risk.setText("Risk: " + allRouteSafetyRating.get(routeNo));
+        Duration.setText("Duration: " + duration);
+        Distance.setText("Distance: " + distance);
+
+
 
     }
 
