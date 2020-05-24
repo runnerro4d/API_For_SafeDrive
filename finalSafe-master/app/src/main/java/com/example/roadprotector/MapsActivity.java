@@ -232,11 +232,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         AutocompleteSupportFragment destFrag = (AutocompleteSupportFragment)   getSupportFragmentManager().findFragmentById(R.id.endLoc);
-        originFrag.setLocationRestriction(rectangularBounds);
-        originFrag.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
-        originFrag.setCountry("AU");
+        destFrag.setLocationRestriction(rectangularBounds);
+        destFrag.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
+        destFrag.setCountry("AU");
 
-        originFrag.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+        destFrag.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
