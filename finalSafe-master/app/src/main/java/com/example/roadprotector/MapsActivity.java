@@ -369,66 +369,66 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-               // removeGeofence();
-
-
-                if (markerPoints.size() > 1) {
-                    markerPoints.clear();
-                    mMap.clear();
-                }
-
-                // Adding new item to the ArrayList
-                markerPoints.add(latLng);
-
-                // Creating MarkerOptions
-                MarkerOptions options = new MarkerOptions();
-
-                // Setting the position of the marker
-                options.position(latLng).title(latLng.toString());
-
-                if (markerPoints.size() == 1) {
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                } else if (markerPoints.size() == 2) {
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                }
-
-                // Add new marker to the Google Map Android API V2
-                mMap.addMarker(options);
-
-                // Checks, whether start and end locations are captured
-                if (markerPoints.size() >= 2) {
-                    LatLng origin = (LatLng) markerPoints.get(0);
-                    LatLng dest = (LatLng) markerPoints.get(1);
-                    destination = dest;
-
-                    //initialising the array of Accident API responses
-                    allRouteAccidentData = new ArrayList<JSONArray>();
-                    routeAccidentDataCount = 0;
-                    accidentStatusTV = findViewById(R.id.RouteDuration_explore);
-                    accidentStatusTV.setText("");
-
-
-                    //["-37.349852, 144.548298","-37.417703, 144.995094"]
-                    String urlParams = "[\"" + origin.latitude + ", " + origin.longitude + "\",\"" + dest.latitude + ", " + dest.longitude + "\"]";
-
-                    DownloadAccidentData download = new DownloadAccidentData();
-                    download.execute(urlParams);
-                    // Getting URL to the Google Directions API
-                   // String url = getDirectionsUrl(origin, dest);
-// //http://accident-api.eba-rjmccapm.ap-southeast-2.elasticbeanstalk.com/AIzaSyBZqLIP9yoJtQUwL-0vhgl0DBL_PVcQq6s/["-37.349852, 144.548298","-37.417703, 144.995094"]
-                    //DownloadTask downloadTask = new DownloadTask();
-
-                    // Start downloading json data from Google Directions API
-                    //downloadTask.execute(url);
-
-
-                }
-
-            }
-        });
+//        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+//            @Override
+//            public void onMapClick(LatLng latLng) {
+//               // removeGeofence();
+//
+//
+//                if (markerPoints.size() > 1) {
+//                    markerPoints.clear();
+//                    mMap.clear();
+//                }
+//
+//                // Adding new item to the ArrayList
+//                markerPoints.add(latLng);
+//
+//                // Creating MarkerOptions
+//                MarkerOptions options = new MarkerOptions();
+//
+//                // Setting the position of the marker
+//                options.position(latLng).title(latLng.toString());
+//
+//                if (markerPoints.size() == 1) {
+//                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+//                } else if (markerPoints.size() == 2) {
+//                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+//                }
+//
+//                // Add new marker to the Google Map Android API V2
+//                mMap.addMarker(options);
+//
+//                // Checks, whether start and end locations are captured
+//                if (markerPoints.size() >= 2) {
+//                    LatLng origin = (LatLng) markerPoints.get(0);
+//                    LatLng dest = (LatLng) markerPoints.get(1);
+//                    destination = dest;
+//
+//                    //initialising the array of Accident API responses
+//                    allRouteAccidentData = new ArrayList<JSONArray>();
+//                    routeAccidentDataCount = 0;
+//                    accidentStatusTV = findViewById(R.id.RouteDuration_explore);
+//                    accidentStatusTV.setText("");
+//
+//
+//                    //["-37.349852, 144.548298","-37.417703, 144.995094"]
+//                    String urlParams = "[\"" + origin.latitude + ", " + origin.longitude + "\",\"" + dest.latitude + ", " + dest.longitude + "\"]";
+//
+//                    DownloadAccidentData download = new DownloadAccidentData();
+//                    download.execute(urlParams);
+//                    // Getting URL to the Google Directions API
+//                   // String url = getDirectionsUrl(origin, dest);
+//// //http://accident-api.eba-rjmccapm.ap-southeast-2.elasticbeanstalk.com/AIzaSyBZqLIP9yoJtQUwL-0vhgl0DBL_PVcQq6s/["-37.349852, 144.548298","-37.417703, 144.995094"]
+//                    //DownloadTask downloadTask = new DownloadTask();
+//
+//                    // Start downloading json data from Google Directions API
+//                    //downloadTask.execute(url);
+//
+//
+//                }
+//
+//            }
+//        });
 
         mMap.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
             @Override
