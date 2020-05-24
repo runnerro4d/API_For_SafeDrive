@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CrashEvader</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_home">Home</string>
+    <string name="title_activity_Navigate">Navigate</string>
+
+</resources>

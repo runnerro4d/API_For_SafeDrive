@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainThing"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentBottom="false"
+    tools:context=".OnboardingActivity">
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="590dp">
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="323dp"
+            android:text="Button" />
+    </androidx.viewpager.widget.ViewPager>
+
+    <LinearLayout
+        android:id="@+id/dotLayout"
+        android:layout_width="149dp"
+        android:layout_height="70dp"
+        android:layout_below="@+id/viewpager"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="100dp"
+        android:layout_marginStart="98dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="113dp"
+        android:orientation="horizontal"></LinearLayout>
+
+    <Button
+        android:id="@+id/prevButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/viewpager"
+        android:layout_marginTop="1dp"
+        android:background="@android:color/transparent"
+        android:text="Back"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/nextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/viewpager"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="5dp"
+        android:background="@android:color/transparent"
+        android:text="Next" />
+
+    <Button
+        android:id="@+id/finishbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/viewpager"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="4dp"
+        android:background="@android:color/transparent"
+        android:enabled="false"
+        android:text="Finish"
+        android:visibility="invisible" />
+
+</RelativeLayout>
+
