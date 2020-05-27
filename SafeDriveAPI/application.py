@@ -8,6 +8,10 @@ import json
 import googlemaps
 from geopy.geocoders import GoogleV3
 from polyline.codec import PolylineCodec
+import geopandas as geop
+from geopy.distance import distance
+from geopy.point import Point as pnt
+from shapely.geometry import MultiLineString, LineString, Point
 
 application = Flask(__name__)
 
@@ -187,74 +191,41 @@ class Faster_Data(Resource):
         geolocation = GoogleV3(api_key=apnk)
         RoadInfo = json.loads(LatLongs)
         directions = gmaps.directions(RoadInfo[0],RoadInfo[1],mode="driving",alternatives=True)
-        polylines = []
-        routeLengths = []
-        routeDurations = []
-        minLats = []
-        minLongs = []
-        maxLats = []
-        maxLongs = []
-        for i in directions:
-            totalLength = 0
-            totalTime = 0
-            for j in i["legs"]:
-                totalLength += j["distance"]["value"]
-                totalTime += j["duration"]["value"]
-            routeLengths.append(totalLength)
-            routeDurations.append(totalTime)
-            polylines.append(i["overview_polyline"]["points"])
-            minLats.append(i["bounds"]["northeast"]["lat"])
-            minLongs.append(i["bounds"]["northeast"]["lng"])
-            maxLats.append(i["bounds"]["southwest"]["lat"])
-            maxLongs.append(i["bounds"]["southwest"]["lng"])
-        minestLat = str(min(minLats))
-        maxestLat = str(max(maxLats))
-        minestLong = str(min(minLongs))
-        maxestLong = str(max(maxLongs))
+        polylines = [i["overview_polyline"]["points"] for i in directions]
+        routeLengths = [j["distance"]["value"]  for i in directions for j in i["legs"]]
+        routeDurations = [j["duration"]["value"]  for i in directions for j in i["legs"]]
         cur = mysql.connection.cursor()
-        df = pd.read_sql('select Longitude, Latitude, RadiusInKM, PostcodeNo, AccidentCount,concat(RoadName,\' \', RoadType) as Road from AccidentCluster where (Latitude between %(minestLat)s and %(maxestLat)s) and (Longitude between %(minestLong)s and %(maxestLong)s);',params={'minestLat':minestLat,'maxestLat':maxestLat,'minestLong':minestLong,'maxestLong':maxestLong} ,index_col=['Latitude','Longitude'],con=mysql.connection)
+        AccData = pd.read_sql('select Longitude, Latitude, RadiusInKM, PostcodeNo, AccidentCount,concat(RoadName,\' \', RoadType) as Road from AccidentCluster where AccidentCount > 1 ;',con=mysql.connection)
+        LS = [LineString(PolylineCodec().decode(line)[1::2]) for line in polylines]
+        MLS = MultiLineString(LS)
+        bounds = MLS.bounds
+        newData = AccData.loc[(AccData['Latitude'] >= bounds[0]) & (AccData['Latitude'] <= bounds[2]) & (AccData['Longitude'] >= bounds[1]) & (AccData['Longitude'] <= bounds[3])]
+        
+        def myFun(point,line):
+            np = line.interpolate(line.project(point))
+            new_point = pnt(longitude=np.y,latitude=np.x)
+            old_point = pnt(longitude=point.y,latitude=point.x)
+            dist = distance(new_point,old_point).km
+            return dist
 
-        for i in range(0,len(polylines)):
-            list1 = PolylineCodec().decode(polylines[i])
-            list1 = list1[0::10]
-            coordinates = [str(i[0])+", "+ str(i[1]) for i in list1]
-            postcodes = []
-            roadnames = []
-            for k in coordinates:
-                # Perform reverse geolocation for each point received in the API call
-                newVal = geolocation.reverse(k)
-                # Splitting the response based on commas
-                roadstuff= newVal[1].address.split(', ')
-                # If we get road names along with post codes follows format [road, suburb, Australia]
-                if len(roadstuff) == 3:
-                    # Split road names based on spaces as roads may have format [number, roadname, roadtype]
-                    roadie = roadstuff[0].split(' ')
-                    if len(roadie) == 1:
-                        roadie = roadie[0]
-                    elif len(roadie) == 2: 
-                        if roadie[0].isdigit():
-                            roadie = roadie[1]
-                        else:
-                            roadie = roadie[0]+' '+roadie[1]
-                    else:
-                        roadie = roadie[1]+ ' '+roadie[2]
-                    areaa = roadstuff[1][-4:]
-                    postcodes.append(areaa)
-                    roadnames.append(roadie)
-            roadset = set(roadnames)
-            postset = set(postcodes)
-            Roads = list(roadset)
-            Postcodes = list(postset)
-            newdf = df[(df['Road'].isin(Roads)) & (df['PostcodeNo'].isin(Postcodes))] 
-            val.append({"RouteNo":i,"polyline": polylines[i],
-            'routeLengthInMeters':routeLengths[i],
-            'routeDurationInSeconds':routeDurations[i],
+        geo = geop.GeoDataFrame(newData,geometry=geop.points_from_xy(newData.Latitude,newData.Longitude))
+        
+        for i in range(len(LS)):
+            s=str(i)
+            geo[s] = geo.apply(lambda val: myFun(val['geometry'],LS[i]),axis=1)
+
+        for i in range(7,len(geo.columns)):
+            j = str(i-7)
+            newdf = geo.loc[(geo[j] <= 3.0)]
+            dropList = [str(thing-7) for thing in range(7,len(geo.columns))]
+            newdf = newdf.drop(columns=dropList)
+            newdf = newdf.drop(columns=['geometry'])
+            val.append({"RouteNo":int(j),"polyline": polylines[i-7],
+            'routeLengthInMeters':routeLengths[i-7],
+            'routeDurationInSeconds':routeDurations[i-7],
             'data':newdf.to_dict(orient='records'),
-            'minLat': minLats[i],
-            'minLong':minLongs[i],
-            'maxLat':maxLats[i],
-            'maxLong':maxLongs[i],
-            'totalAccidents': str(newdf['AccidentCount'].sum())})
+            'totalAccidents': str(newdf['AccidentCount'].sum()),
+            'bounds':bounds})
         finalVal = {'routes':val}
         return jsonify(finalVal)
 
